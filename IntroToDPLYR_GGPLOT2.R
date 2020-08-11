@@ -94,6 +94,9 @@ geom_bar(aes(x = type, y = Value, fill = Year), stat='identity', position = 'dod
 # you need to define which X and Y values you use within the 'aes()' brackets
 # we've also added 'fill', which means that data will be coloured differently for each
 # year in our data frame
+  
+# you can check out the list of different geoms by tying in 'geom_' to the line below and 
+# looking at the list of geoms that pop up
 
 stat_summary(aes(x = type, y = Value, fill = Year))+
 
@@ -103,6 +106,11 @@ stat_summary(aes(x = type, y = Value, fill = Year))+
   
 coord_cartesian(ylim = c(0, 450000)) + # we use the 'coord' level to set our y axis limits
   #play around with the values in 'ylim = ()' to see what happens
+  
+  #coord functions can also do interesting things with the relationship between the X and Y axis.
+  #for example, turn on the code below to flip the axes:
+  
+  #coord_flip()+
 
 labs(x = 'Energy Type',
      y = 'Count',
