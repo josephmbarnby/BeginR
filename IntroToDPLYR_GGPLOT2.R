@@ -66,6 +66,8 @@ data_long <- data %>%
 
 # use '?dplyr' to explore more things you can do with your data!
 
+# here is a useful cheat sheet for DPLYR https://github.com/rstudio/cheatsheets/blob/master/data-transformation.pdf
+
                             # exercise #
 
 # Can you explore Dplyr to group by each country name and energy type,
@@ -131,6 +133,7 @@ theme_classic()
 # Your own data -----------------------------------------------------------
 
 # try ggplot here wth some of your own data!
-  
+ 
+# here is a useful cheat sheet for GGPLOT2 https://rstudio.com/wp-content/uploads/2015/03/ggplot2-cheatsheet.pdf
 
 
