@@ -142,10 +142,10 @@ plot(astronauts$year_of_birth, astronauts$hours_mission) # This plot is a bit gr
 # Try to make a new plot with the package 'ggplot2' you've just downloaded
 
 ggplot(data = astronauts) + 
-  geom_point(aes(year_of_birth, hours_mission, color = year_of_birth)) # remove these hashtags (lines 136 + 137) and replace it with
-                                                                       # '+' to make the plot look really fancy :)
+  geom_point(aes(year_of_birth, hours_mission, color = year_of_birth)) # remove these comments (lines 145 + 146) and replace them with
+                                                                       # '+' as well as the below instructions to make the plot look really fancy :)
  
-# Take the hashtags away from all the lines below this line too (lines 142-149) using the 'alt' shortcut (but keep the hashtag on this line)
+# Take the hashtags away from all the lines below this line too (lines 150-157) using the 'alt' shortcut (but keep the hashtag on this line)
 
   #geom_smooth(aes(year_of_birth, hours_mission), method = 'lm')+
 
