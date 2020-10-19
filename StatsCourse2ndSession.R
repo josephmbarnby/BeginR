@@ -5,6 +5,7 @@ rm(list=ls())
 #  Sample sizes:– why?  
 #  What do the graphs mean? 
 #  Why anovas? 
+#  Is there a difference between a regression and an anova?
 
 # installing libraries
 
@@ -40,6 +41,14 @@ ggboxplot(data_long,
           ylab = "value", 
           xlab = "group")
 
+ggline(data_long, 
+       x = "group", 
+       y = "value", 
+       add = c("mean_se", "jitter"), 
+       color = "group",
+       ylab = "Value", 
+       xlab = "Group")
+
 # anova and linear modelling (regression)
 
 aov1 <- aov(value ~ group, data_long)
@@ -49,3 +58,14 @@ summary(aov1)
 lm1  <- lm(value ~ group, data_long)
 
 summary(lm1)
+
+# put both together
+
+ggplot(data_long) +
+  
+  geom_jitter(aes(group, value, color = group))+
+  geom_boxplot(aes(group, value, fill = group), color = 'black')+
+  
+  ggpubr::stat_compare_means(aes(group, value, color = group), 
+                             paired = F 
+                              )
