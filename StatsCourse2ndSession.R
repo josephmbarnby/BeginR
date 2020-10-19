@@ -1,14 +1,10 @@
 rm(list=ls())
 
-# Based on above paper: 
-#   Brain tissue – why? 
-#   Sample sizes: AD (n=12) and NCs (n=8) – why?  
-#   What do tables mean? 
-#   What do graphs / figures mean? (suggested questions / activities only) 
-# Section 2.5.: “Statistical analysis: Differences were analyzed by the use of independent-samples t-test.” 
-# Why independent?  Why a t-test? 
-#   What are statistics? 
-#   SPSS; and especially R. 
+#  Based on above paper: 
+#  Brain tissue – why? 
+#  Sample sizes:– why?  
+#  What do the graphs mean? 
+#  Why anovas? 
 
 # installing libraries
 
