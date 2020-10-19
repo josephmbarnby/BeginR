@@ -20,46 +20,47 @@ library(ggpubr)
 
 # creating data (explain what the '<-' mean)
 
-scz <- rnorm(n = 24, mean = 5.0, sd = 2)
-bip <- rnorm(n = 23, mean = 4.5, sd = 1)
-hcl <- rnorm(n = 23, mean = 5.0, sd = 1)
-dep <- rnorm(n = 19, mean = 5.5, sd = 1)
+scz <- rnorm(n = 24, mean = 5.0, sd = 2) # schizophrenia
+bip <- rnorm(n = 23, mean = 4.5, sd = 1) # bipolar
+hcl <- rnorm(n = 23, mean = 5.0, sd = 1) # healthy control
+dep <- rnorm(n = 19, mean = 5.5, sd = 1) # depression
 
 data <- cbind(scz, bip, hcl, dep)
 data <- as.data.frame(data)
 
-data_long <- data %>% pivot_longer(1:4, names_to = "group", values_to = "value")
+data_long <- data %>% pivot_longer(1:4, names_to = "group", values_to = "value") 
 
-# plotting
+# Plotting ----------------------------------------------------------------
 
+# general plot of data spread
 plot(data)
 
-ggboxplot(data_long, 
-          x = "group", 
-          y = "value", 
-          color = "group", 
-          ylab = "value", 
-          xlab = "group")
+#box plot of data by group
+ggplot(data_long) +  # you put the data frame you want to work on within the brackets in the first line here
+  
+  geom_boxplot(aes(group, value, fill = group), color = 'black') # this line is adding the box plots
 
-ggline(data_long, 
-       x = "group", 
-       y = "value", 
-       add = c("mean_se", "jitter"), 
-       color = "group",
-       ylab = "Value", 
-       xlab = "Group")
+# data distribution and mean +- SE of data
+ggplot(data_long) + 
+  
+  geom_jitter(aes(group, value, color = group))+ # this line is adding the data points 
+  stat_summary(aes(group, value), color = 'black') # this line is adding the mean and SD
 
-# anova and linear modelling (regression)
+# ANOVA and Linear Models -------------------------------------------------
 
-aov1 <- aov(value ~ group, data_long)
+aov1 <- aov(value ~ group, data_long) # this runs an anova
 
-summary(aov1)
+summary(aov1) #the summary function allows you to check your models results
 
-lm1  <- lm(value ~ group, data_long)
+lm1  <- lm(value ~ group, data_long) # this runs a linear model
 
 summary(lm1)
 
-# put both together
+# EXTRA # only include if there is time/ you want to
+install.packages("broom")
+broom::tidy(aov1) # this package is a tidy way to view your model results
+
+# Add it both together ----------------------------------------------------
 
 ggplot(data_long) +
   
