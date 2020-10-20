@@ -7,16 +7,18 @@ rm(list=ls())
 #  Why anovas? 
 #  Is there a difference between a regression and an anova?
 
+#--------------------------------------
+
 # installing libraries
 
 install.packages('psych') # this will install a bunch of functions that we will want to use this session
 install.packages("ggpubr") #visualisation tools
 
-# loading libraries
-
 library(tidyverse)
 library(psych)
 library(ggpubr)
+
+#--------------------------------------
 
 # creating data (explain what the '<-' mean)
 
@@ -25,6 +27,14 @@ bip <- rnorm(n = 23, mean = 4.5, sd = 1) # bipolar
 hcl <- rnorm(n = 23, mean = 5.0, sd = 1) # healthy control
 dep <- rnorm(n = 19, mean = 5.5, sd = 1) # depression
 
+# Add NAs to data to complete the vectors
+
+#Generate patient data
+bip = c(bip, NA)
+hcl = c(hcl, NA)
+dep = c(dep, rep(NA, times = 5))
+
+#combine the data 
 data <- cbind(scz, bip, hcl, dep)
 data <- as.data.frame(data)
 
@@ -35,18 +45,22 @@ data_long <- data %>% pivot_longer(1:4, names_to = "group", values_to = "value")
 # general plot of data spread
 plot(data)
 
-#box plot of data by group
+#--------------------------------------
+
+#Box plot of data by group
 ggplot(data_long) +  # you put the data frame you want to work on within the brackets in the first line here
   
   geom_boxplot(aes(group, value, fill = group), color = 'black') # this line is adding the box plots
 
-# data distribution and mean +- SE of data
+#Data distribution and mean +- SE of data
 ggplot(data_long) + 
   
   geom_jitter(aes(group, value, color = group))+ # this line is adding the data points 
   stat_summary(aes(group, value), color = 'black') # this line is adding the mean and SD
 
 # ANOVA and Linear Models -------------------------------------------------
+
+#ANOVA using linear models
 
 aov1 <- aov(value ~ group, data_long) # this runs an anova
 
@@ -56,11 +70,17 @@ lm1  <- lm(value ~ group, data_long) # this runs a linear model
 
 summary(lm1)
 
-# EXTRA # only include if there is time/ you want to
+#Test For Equal Means In A One-Way Layout: by default, unequal variance are assumed = Welch's ANOVA
+oneway.test(value ~ group, data_long, var.equal = F)
+
+#--------------------------------------
+
+#EXTRA only include if there is time/ you want to
 install.packages("broom")
+
 broom::tidy(aov1) # this package is a tidy way to view your model results
 
-# Add it both together ----------------------------------------------------
+# Add it all together ----------------------------------------------------
 
 ggplot(data_long) +
   
