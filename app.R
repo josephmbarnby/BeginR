@@ -32,6 +32,8 @@ ui <- fluidPage(
       uiOutput("formula")
       ),
     br(),
+    titlePanel(h4("Move the sliders to change the task structure and agent policy")),
+    br(),
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
@@ -85,7 +87,7 @@ server <- function(input, output) {
                        $$Q^{t}_{c} = Q^{t-1}_{c} * \\lambda + ({Reward - Q^{t-1}_{c}})$$
                        $$p(\\hat{c} = c) = \\frac{exp(\\frac{Q^{t}_{c}}{\\tau})}{\\sum_{c'\\in(c_1, c_2)} exp(\\frac{Q^{t}_{c'}}{\\tau})}$$
                        $$\\theta = {[\\lambda, \\tau]}$$
-
+                       $$\\text{Therefore, } Q^{t}_{c} = \\text{the internal beliefs the agent holds about the value of each card at each trial}$$
                        "))
     })
 
@@ -101,6 +103,7 @@ server <- function(input, output) {
 
         Q2[1,]  <- c(0.5, 0.5) # Initialize the first two actions as equal probabilities
         R2      <- matrix(c(1-input$winprob, input$winprob, input$winprob, 1-input$winprob), 2, 2)
+        prob_a1 <- rep(NA, trials+1)
 
         #Sample the cards
         for (t in 1:trials){
@@ -108,8 +111,8 @@ server <- function(input, output) {
           #sample an action
           a1         <- exp(Q2[t,1]/tau)
           a2         <- exp(Q2[t,2]/tau)
-          prob_a1    <- a1/(a1+a2)
-          a          <- sample(c(1,2),  1, T, prob = c(prob_a1, 1-prob_a1))
+          prob_a1[t] <- a1/(a1+a2)
+          a          <- sample(c(1,2),  1, T, prob = c(prob_a1[t], 1-prob_a1[t]))
 
           #sample a reward for the action
           prob_r     <- R2[a,]
@@ -131,11 +134,16 @@ server <- function(input, output) {
         colnames(Q2) <- c('Card 1', 'Card 2')
         Q2 %>%
           as.data.frame() %>%
-          mutate(Trial = 0:trials) %>%
+          mutate(Trial = 0:trials,
+                 ProbA1= prob_a1) %>%
           pivot_longer(1:2, 'Option', values_to = 'Q') %>%
 
           ggplot(aes(Trial, Q, color = Option))+
           geom_line()+
+          geom_line(aes(Trial, ProbA1), linetype = 2, color = 'black')+
+          #geom_text(aes(trials/2, prob_a1[trials/2]),
+          #          label = 'Probability of \n choosing card 1',
+          #          color = 'black', check_overlap = T, nudge_y = 0.1, fontface = 'bold', size = 6)+
           geom_hline(yintercept = c(input$winprob, 1-input$winprob),
                      color = c("#377EB8", "#E41A1C"),
                      linetype = 2, alpha = 0.2)+
