@@ -89,8 +89,8 @@ server <- function(input, output) {
     output$formula <- renderUI({
     withMathJax(paste0("
                        $$Q^{t}_{c} = Q^{t-1}_{c} * \\lambda + ({Reward - Q^{t-1}_{c}})$$
-                       $$p(\\hat{c} = c) = \\frac{exp(\\frac{Q^{t}_{c}}{\\tau})}{\\sum_{c'\\in(c_1, c_2)} exp(\\frac{Q^{t}_{c'}}{\\tau})}$$
-                       $$\\theta = {[\\lambda, \\tau]}$$
+                       $$p(\\hat{c} = c) = \\frac{e^{\\frac{Q^{t}_{c}}{\\tau}}}{\\sum_{c'\\in(c_1, c_2)} e^{\\frac{Q^{t}_{c'}}{\\tau}}}$$
+
                        $$\\text{Therefore, } Q^{t}_{c} = \\text{the internal beliefs the agent holds about the value of each card at each trial}$$
                        "))
     })
