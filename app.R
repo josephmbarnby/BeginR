@@ -1,6 +1,10 @@
 
+install.packages(c('tidyverse', 'shiny'))
 library(shiny)
 library(tidyverse)
+
+theme_set(theme_bw() +
+            theme(text = element_text(size = 20)))
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
@@ -137,7 +141,7 @@ server <- function(input, output) {
                      linetype = 2, alpha = 0.2)+
           coord_cartesian(ylim = c(0,1))+
           scale_color_brewer(palette = 'Set1')+
-          labs(y = expression(paste('p( ', hat(c),' | Reward; ', theta, ' )')))+
+          labs(y = expression(paste('Q'[c]^t)))+
           scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2))+
           theme(axis.title = element_text(size = 20),
                 axis.text = element_text(size = 20),
