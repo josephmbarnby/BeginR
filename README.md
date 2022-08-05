@@ -6,5 +6,5 @@ To run the reinforcement learning primer copy and paste these lines into your co
 
 ```{r}
 library(shiny)
-runGitHub( "BeginR", "josephmbarnby)
+runGitHub( "BeginR", "josephmbarnby")
 ```
