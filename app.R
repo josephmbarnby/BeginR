@@ -32,7 +32,11 @@ ui <- fluidPage(
       uiOutput("formula")
       ),
     br(),
-    titlePanel(h4("Move the sliders to change the task structure and agent policy")),
+    titlePanel(h4(HTML(paste("Move the sliders to change the task structure and agent policy.",
+                  "<br/>",
+                  "The black dashed line is the probability that the agent will choose Card 1,
+                  and the coloured lines are the internal beliefs the agent holds about the value of each card.",
+                  sep="<br/>")))),
     br(),
     # Sidebar with a slider input for number of bins
     sidebarLayout(
