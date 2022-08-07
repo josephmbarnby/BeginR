@@ -1,16 +1,15 @@
 
-install.packages(c('tidyverse', 'shiny'))
+#install.packages(c('ggplot2','dplyr', 'shiny'))
 library(shiny)
-library(tidyverse)
-
-theme_set(theme_bw() +
-            theme(text = element_text(size = 20)))
+library(dplyr)
+library(ggplot2)
+library(tidyr)
 
 # Define UI for application that draws a histogram
 ui <- fluidPage(
 
     # Application title
-    titlePanel(h1("Basic Reinforcement Learning Agent Tutorial")),
+    titlePanel(h1("Basic Reinforcement Learning Tutorial")),
     titlePanel(h4(HTML(paste(
                     "This is an introduction to creating a basic algorithm that learns the value of its environment.",
                   "<br/>",
@@ -20,7 +19,7 @@ ui <- fluidPage(
                   agent will seek to maximise its return.",
                   "<br/>",
                   "The rate at which the agent will explore its environment is governed by two parameters:
-                  a learning rate (how quickly an agent learns) and a decision temperature (how noisy an agent chooses
+                  a learning rate (how quickly an agent learns from each reward) and a decision temperature (how noisily an agent chooses
                   between each option)",sep="<br/>")))),
 
     titlePanel(h4("This agent uses the following equations:")),
@@ -36,20 +35,25 @@ ui <- fluidPage(
                   "<br/>",
                   "The black dashed line is the probability that the agent will choose Card 1,
                   and the coloured lines are the internal beliefs the agent holds about the value of each card.",
+                  "</br/>",
+                  "Click 'Select a new agent' to start a new agent from scratch using the same settings",
                   sep="<br/>")))),
     br(),
     # Sidebar with a slider input for number of bins
     sidebarLayout(
         sidebarPanel(
+            actionButton("setseed", "Select a new agent"),
+            br(),
+            br(),
             sliderInput("lr",
                         HTML(paste("Learning Rate: (&lambda;)")),
-                        min = 0,
+                        min = 0.01,
                         max = 1,
                         value = 0.1,
                         step = 0.01),
             sliderInput("tau",
                         HTML(paste("Decision Temperature: (&tau;)")),
-                        min = 0,
+                        min = 0.1,
                         max = 10,
                         value = 1,
                         step = 0.1),
@@ -61,10 +65,10 @@ ui <- fluidPage(
            #             step = 0.1),
             sliderInput("trials",
                         "Task Length:",
-                        min = 0,
+                        min = 50,
                         max = 1000,
-                        value = 100,
-                        step = 10),
+                        value = 500,
+                        step = 50),
             sliderInput("winprob",
                         "Win Probability of Card 2:",
                         min = 0,
@@ -75,7 +79,7 @@ ui <- fluidPage(
 
         # Show a plot of the generated distribution
         mainPanel(
-           plotOutput("distPlot")
+           plotOutput("distPlot", height = '500px', width = 'auto')
         )
     ),
 
@@ -101,15 +105,19 @@ server <- function(input, output) {
         lambda  <- input$lr
         tau     <- input$tau
         gamma   <- input$gamma
+        seed    <- input$setseed
 
         actions <- 2
         Q2      <- matrix(NA, trials+1, actions)
 
         Q2[1,]  <- c(0.5, 0.5) # Initialize the first two actions as equal probabilities
         R2      <- matrix(c(1-input$winprob, input$winprob, input$winprob, 1-input$winprob), 2, 2)
-        prob_a1 <- rep(NA, trials+1)
+        r       <- prob_a1 <- rep(NA, trials+1)
 
         #Sample the cards
+          observeEvent(input$setseed, {
+          set.seed(sample(1:100000, 1))
+        })
         for (t in 1:trials){
 
           #sample an action
@@ -120,13 +128,13 @@ server <- function(input, output) {
 
           #sample a reward for the action
           prob_r     <- R2[a,]
-          r          <- sample(c(1, 0), 1, T, prob = prob_r)
+          r[t]       <- sample(c(1, 0), 1, T, prob = prob_r)
 
           #update
-          PE         <- r - Q2[t, a]
+          PE         <- r[t] - Q2[t, a]
 
           #if(input$gamma > 0){
-          #Q2[t+1, a] <- Q2[t, a] + lambda * (r + gamma * (max(Q2[t,] - Q2[t, a], 0))) #RW equation w discount
+          #Q2[t+1, a] <- Q2[t, a] + lambda * (gamma * r + (max(Q2[t,]) - Q2[t, a])) #RW equation w discount
           #} else{
           Q2[t+1, a] <- Q2[t, a] + (lambda * PE) #RW equation
           #}
@@ -145,9 +153,9 @@ server <- function(input, output) {
           ggplot(aes(Trial, Q, color = Option))+
           geom_line()+
           geom_line(aes(Trial, ProbA1), linetype = 2, color = 'black')+
-          #geom_text(aes(trials/2, prob_a1[trials/2]),
-          #          label = 'Probability of \n choosing card 1',
-          #          color = 'black', check_overlap = T, nudge_y = 0.1, fontface = 'bold', size = 6)+
+          geom_text(x = trials*0.25, y = 0.05,
+                    label = paste('Total rewards received = ',sum(r[1:trials])),
+                    color = 'black', check_overlap = T, nudge_y = 0.1, fontface = 'bold', size = 5)+
           geom_hline(yintercept = c(input$winprob, 1-input$winprob),
                      color = c("#377EB8", "#E41A1C"),
                      linetype = 2, alpha = 0.2)+
@@ -155,7 +163,9 @@ server <- function(input, output) {
           scale_color_brewer(palette = 'Set1')+
           labs(y = expression(paste('Q'[c]^t)))+
           scale_y_continuous(breaks = seq(0, 1, 0.2), labels = seq(0, 1, 0.2))+
-          theme(axis.title = element_text(size = 20),
+          theme_bw() +
+          theme(text = element_text(size = 20),
+                axis.title = element_text(size = 20),
                 axis.text = element_text(size = 20),
                 legend.title = element_blank(),
                 legend.text = element_text(size = 20),
