@@ -29,12 +29,11 @@ mydata   <- wcmatches
 
   ## Geometries
 
-  geom_jitter(shape = 21, colour = 'black')
-  geom_smooth(aes(x = home_score, y = away_score), color = 'blue', fill = 'grey', method = 'lm')
+  geom_jitter(shape = 21, colour = 'black')+
 
   ## Facets
 
-  facet_wrap(~dayofweek, nrow = 1) +
+  facet_wrap(~dayofweek, nrow = 1)+
 
   ## Statistics
 
@@ -96,13 +95,17 @@ vizdata <- newdata %>%
 
 ggplot(vizdata,
        aes(Goals, fct_rev(Team), fill = dayofweek))+
-  geom_point(shape = 21, size = 3, colour = 'black')+
-  geom_flag(aes(country = code), x = -0.05, size = 6)+
+  geom_point(shape = 21, size = 4,
+             colour = 'black')+
+  geom_flag(aes(country = code), x = -0.05, size = 8)+
   labs(x = 'Standardised Goals', x = '',
-       title = 'Do weekends make better games?',
-       subtitle = 'Standardised goals scored by day of the week',
+       title = 'Do weekends produce more goals at the World Cup?',
+       subtitle = 'Standardised goals scored by day of the week from 1930-2018',
        caption = 'Goals weighted by total goals scored from 1930-2018 | CC JMBarnby')+
-  scale_fill_brewer(name = 'Day')+
+  scale_fill_manual(name = 'Day', values = c(
+    "#EFF3FF", "#BDD7E7", "#6BAED6", "#3182BD", "#08519C",
+    "#F9CB40", "#BA2D0B"
+  ))+
   theme_bw() +
   theme(axis.title.y = element_blank(),
         legend.position = c(0.8, 0.8),
@@ -112,9 +115,9 @@ ggplot(vizdata,
         panel.border = element_blank(),
         axis.ticks.y = element_blank(),
         legend.background = element_rect(colour = 'black'),
-        text = element_text(size = 22, family = 'Helvetica'),
-        plot.caption = element_text(size = 14, face = 'italic', colour = 'grey'),
-        plot.subtitle = element_text(size = 16, face = 'italic', color = 'grey'),
+        text = element_text(size = 24, family = 'Helvetica'),
+        plot.caption = element_text(size = 16, face = 'italic', colour = 'grey'),
+        plot.subtitle = element_text(size = 18, face = 'italic', color = 'grey'),
         plot.title = element_text(face = 'bold'))+
   annotate(x = c(1, 1.7), y = 11,
            geom = 'line', size = 1, arrow = arrow(type = 'closed'))+
