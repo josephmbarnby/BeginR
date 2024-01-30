@@ -1,5 +1,6 @@
 # Introduction to R
-# Edited by JM Barnby; Jan 2023
+# Edited by JM Barnby; Jan 2024
+# Copyright 2013 by Ani Katchova
 
 # Set working directory to where csv file is located
 # setwd("C:/Econometrics/Data")
@@ -9,26 +10,17 @@
 # This loads the readme and all the datasets for the week of interest
 
 # Either ISO-8601 date or year/week works!
-#
-install.packages(c('tidytuesdayR', 'tidyverse'))
-library(tidytuesdayR)
-library(tidyverse)
 
-tuesdata <- tidytuesdayR::tt_load('2022-11-29')
-tuesdata <- tidytuesdayR::tt_load(2022, week = 48)
-
-worldcups  <- tuesdata$worldcups
-wcmatches  <- tuesdata$wcmatches
+tuesdata <- tidytuesdayR::tt_load('2023-06-06')
+fuel_23  <- tuesdata$`owid-energy`
 
 # Or read in the data manually
-wcmatches <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-11-29/wcmatches.csv')
+fuel_23 <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2023/2023-06-06/owid-energy.csv')
 
-worldcups <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2022/2022-11-29/worldcups.csv')
-
-mydata   <- wcmatches
+mydata  <- fuel_23
 
 # Read the data from local
-mydata  <- read.csv('downloads/freedom.csv')
+mydata  <- read.csv('downloads/fuel_23.csv')
 
 # List the variables
 names(mydata)
@@ -38,56 +30,51 @@ head(mydata)
 mydata[1:10,]
 
 # Access a variable
-mydata$home_score
+mydata$gdp
 
 # Descriptive statistics
-summary(mydata$home_score)
-sd(mydata$home_score)
-length(mydata$home_score)
+summary(mydata$gdp)
+
+length(mydata$gdp)
+summary(mydata$fossil_fuel_consumption)
+sd(na.omit(mydata$fossil_fuel_consumption))
 
 # Frequency tables
-table(mydata$home_score)
-table(mydata$home_score, mydata$away_score)
+table(mydata$gdp)
+table(mydata$gdp, mydata$country)
 
 # Correlation among variables
-cor(mydata$home_score, mydata$away_score)
-cor.test(mydata$home_score, mydata$away_score)
+install.packages('tidyverse')
+library(tidyverse)
 
-# T-test for mean of home vs away
-t.test(mydata$home_score, mydata$away_score)
+mydata_filtered <- mydata %>%
+  filter(
+    !is.na(fossil_fuel_consumption) & !is.na(gdp),
+    year == 2010
+    )
 
-#### LETS DO THE ABOVE BUT WITH THE TIDY VERSE
-#### For that we need to introduce this -> %>%
-#### This is a pipe. It allows the chaining of functions:
+cor(mydata_filtered$gdp, mydata_filtered$fossil_fuel_consumption)
+plot(mydata_filtered$gdp, mydata_filtered$fossil_fuel_consumption)
 
-mydata %>%
-  filter(country == 'France') %>%
-  dplyr::select(home_score) %>%
-  na.omit() %>%
-  summary()
+# T-test for mean of one group
+t.test(mydata_filtered$fossil_fuel_consumption)
 
-# We can also use the native R operator to
-# do the same thing -> |>
+# ANOVA for equality of means for two groups
 
-mydata |>
-  select(home_score) |>
-  summary()
-
-# ANOVA for days of the week
-newdata <- mydata %>%
-  mutate(TotalGoals = home_score + away_score)
-
-aov(TotalGoals ~ dayofweek, data = newdata)
-aov1 <- aov(TotalGoals ~ dayofweek, data = newdata) %>%
-  summary()
-
-# OLS regression
-newdata2 <- mydata %>%
-  pivot_longer(home_score:away_score, names_to = 'Location', values_to = 'Score')
-
-olsreg <- lm(
-  Score ~ Location + dayofweek,
-  newdata2
+#lets create some fake data (below)
+my_sim <- data.frame(
+  group1 = rnorm(100, mean = 0, sd = 2),
+  group2 = rnorm(100, mean = 0, sd = 6)
+  ) %>%
+  pivot_longer(
+    group1:group2, names_to = 'group', values_to = 'data'
   )
 
+aov_1 <- aov(data ~ group, my_sim)
+summary(aov_1)
+
+# OLS regression
+olsreg <- lm(gdp ~ fossil_fuel_consumption + per_capita_electricity, data = mydata_filtered)
 summary(olsreg)
+
+
