@@ -9,6 +9,8 @@ tuesdata <- tidytuesdayR::tt_load('2023-06-06')
 fuel_23  <- tuesdata$`owid-energy`
 mydata   <- fuel_23
 
+# Full codebook: https://github.com/owid/energy-data/blob/master/owid-energy-codebook.csv
+
 # Visualise ---------------------------------------------------------------
 
   ## Data
@@ -66,7 +68,6 @@ mydata   <- fuel_23
 
 library(tidybayes)
 library(ggpubr)
-library(ggflags)
 
 vizdata <- mydata %>%
   filter(
